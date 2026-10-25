@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090e19">
+<meta name="color-scheme" content="dark">
+<title>OBSIDIAN | Private Cipher</title>
+<style>
+:root{color-scheme:dark;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:#090e19;color:#f0f4fb;line-height:1.48}
+*{box-sizing:border-box}body{margin:0;min-height:100svh;background:radial-gradient(ellipse 75% 46% at 84% -15%,#1b3b54b0,transparent),linear-gradient(155deg,#090e19 0%,#101a2c 100%)}
+main{max-width:780px;margin:auto;padding:25px 16px max(44px,env(safe-area-inset-bottom))}
+.brand{font-weight:900;font-size:.83rem;letter-spacing:.28em;color:#95c8e9}.brandMark{color:#a9e1ff;margin-right:7px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.pill{border:1px solid #3a566b;color:#b6d2e2;background:#142538;border-radius:100px;padding:5px 12px;font-size:.76rem}
+h1{margin:33px 0 12px;font-size:clamp(2.2rem,7.4vw,3.7rem);letter-spacing:-.065em;line-height:1.05}.lead{max-width:590px;color:#b1c2d5;margin:0 0 26px;font-size:1rem}
+.panel{background:#172338ed;border:1px solid #34465e;border-radius:20px;padding:22px;box-shadow:0 14px 36px #0002;margin-bottom:16px}h2{font-size:1.14rem;margin:0 0 14px;letter-spacing:-.015em}h3{font-size:1.02rem;margin:0 0 10px}
+label{display:block;font-size:.9rem;font-weight:650;margin:14px 0 7px;color:#dbe9f5}input,textarea{width:100%;font:inherit;background:#0d1728;border:1px solid #476078;border-radius:11px;color:#f2f6fc;padding:12px 13px;outline:none;min-height:46px}input:focus,textarea:focus,button:focus-visible{outline:2px solid #84deeb;outline-offset:2px}textarea{min-height:138px;resize:vertical;overflow-wrap:anywhere}textarea[readonly]{background:#112036}input::placeholder,textarea::placeholder{color:#8195ab}input[type=password]{letter-spacing:.09em}input[type=password]::placeholder{letter-spacing:0}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.row>*{min-width:0}.row input{flex:1 1 210px}button{font:inherit;font-size:.92rem;font-weight:720;border:1px solid #4a6580;border-radius:11px;min-height:45px;padding:10px 16px;background:#25374d;color:#eaf5ff;cursor:pointer}button:active{transform:translateY(1px)}button.primary{background:#90dced;border-color:#90dced;color:#071726}button.outline{background:transparent}button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.muted{font-size:.82rem;color:#aebfd3;margin:11px 0 0}.status{font-size:.86rem;color:#adc8d7;min-height:24px;margin:11px 0 0;overflow-wrap:anywhere}.status.ok{color:#a9efcf}.status.err{color:#ffb5b1}.status.warn{color:#f8cf94}.sep{height:1px;background:#34465e;margin:21px 0}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#0c182a;border:1px solid #36506a;padding:4px;border-radius:12px;gap:5px;margin-bottom:18px}.tabs button{border:0;background:transparent;font-size:.94rem}.tabs button.active{background:#355c79;color:white}.right{display:flex;justify-content:flex-end}.stack{display:grid;gap:13px}.footer{font-size:.8rem;line-height:1.6;color:#9db1c5;margin:18px 0 0}.footer strong{color:#e1ebf4}.hidden{display:none!important}#lockScreen{max-width:500px;margin:28px auto}#vaultScreen{display:none}#appScreen{display:none}.headLine{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}.headLine h2{margin:0}.smallTag{color:#93b6cd;font-size:.78rem;text-transform:uppercase;letter-spacing:.11em;font-weight:760}#output{min-height:128px}.ghost{color:#a6dcf6;border-color:#45647e;background:#182c42}
+@media(max-width:530px){main{padding:20px 12px 35px}.panel{padding:17px;border-radius:16px}.row button{flex:1 1 auto}h1{margin-top:25px}.pill{font-size:.69rem}}
+</style>
+</head>
+<body>
+<main>
+<header class="top"><div class="brand"><span class="brandMark">◆</span>OBSIDIAN</div><div class="pill">LOCAL · NO ACCOUNT</div></header>
+<div id="compat" class="status warn" role="alert"></div>
+<section id="lockScreen" class="panel" aria-label="Passcode lock">
+ <div class="smallTag">Private access</div><h1 id="lockTitle">Set your code.</h1><p class="lead" id="lockBlurb">Protect access to this screen with an eight-digit code.</p>
+ <form id="pinForm">
+  <label for="pinEntry">8-digit access code</label><input id="pinEntry" type="password" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" autocomplete="off" placeholder="••••••••" required>
+  <div id="confirmWrap"><label for="pinConfirm">Confirm your access code</label><input id="pinConfirm" type="password" inputmode="numeric" maxlength="8" pattern="[0-9]{8}" autocomplete="off" placeholder="••••••••"></div>
+  <div class="row" style="margin-top:17px"><button type="submit" class="primary" id="pinSubmit">Set code & unlock</button></div>
+ </form>
+ <p class="status" id="pinStatus" aria-live="polite"></p>
+ <p class="muted">This code locks the interface on this device. It is not your message encryption secret. Private messages are not stored by the app.</p>
+</section>
+<div id="appScreen">
+ <h1>Secrets, sealed.</h1><p class="lead">Write a message. Encrypt it. Share the encoded text. The recipient opens their copy of OBSIDIAN and decrypts it with your shared secret.</p>
+ <section class="panel">
+  <div class="headLine"><h2>Message secret</h2><span class="smallTag">Never saved</span></div>
+  <label for="secret">Both people must use the same secret</label>
+  <div class="row"><input id="secret" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Enter a long shared secret"><button id="showSecret" type="button">Show</button></div>
+  <div class="row" style="margin-top:10px"><button id="generate" type="button">Generate strong secret</button><button id="copySecret" type="button" class="outline">Copy secret</button></div>
+  <p class="muted">Use a different, long random secret from your 8-digit app code. Share it privately with the person who will decrypt your messages.</p>
+ </section>
+ <section class="panel">
+  <div class="headLine"><h2>Messages</h2><button id="lockNow" type="button" class="ghost">Lock app</button></div>
+  <div class="sep" style="margin:16px 0"></div>
+  <div class="tabs" role="tablist" aria-label="Choose operation"><button id="tabEncrypt" class="active" role="tab" aria-selected="true" aria-controls="encryptView" type="button">Encrypt</button><button id="tabDecrypt" role="tab" aria-selected="false" aria-controls="decryptView" type="button">Decrypt</button></div>
+  <div id="encryptView" role="tabpanel">
+   <label for="message">Your original message</label><textarea id="message" placeholder="Type a private message here…" maxlength="50000"></textarea>
+   <div class="row" style="margin-top:13px"><button id="encrypt" class="primary" type="button">Encrypt message</button></div>
+  </div>
+  <div id="decryptView" role="tabpanel" class="hidden">
+   <label for="received">Encrypted message</label><textarea id="received" placeholder="Paste an OBSIDIAN message here…" autocapitalize="off" spellcheck="false" maxlength="200000"></textarea>
+   <div class="row" style="margin-top:13px"><button id="decrypt" class="primary" type="button">Decrypt message</button><button id="tryMine" type="button">Use encrypted result</button></div>
+   <p class="muted">Decryption starts automatically after you paste a complete message and enter its secret.</p>
+  </div>
+  <p class="status" id="resultStatus" aria-live="polite"></p>
+  <label for="output" id="outputLabel">Encrypted result</label><textarea id="output" readonly placeholder="Result appears here…"></textarea>
+  <div class="row" style="margin-top:10px"><button id="copyOutput" type="button" class="outline">Copy result</button><button id="clear" type="button" class="outline">Clear screen</button></div>
+ </section>
+ <div class="footer"><strong>Privacy:</strong> Encryption runs on your device. No accounts, analytics, requests, or remote libraries. This file doesn't automatically send messages or read other apps. Anyone with the message and its secret can decrypt it. The access code only controls this interface; it cannot stop someone from opening another copy of the file. For truly sensitive exchanges, use an independently audited secure messenger. <strong>Compatibility:</strong> Requires modern browser Web Crypto access, which may be blocked by some iPhone HTML-file previews. The same file can be hosted using HTTPS to work reliably in Safari.</div>
+</div>
+</main>
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const enc = new TextEncoder(), dec = new TextDecoder('utf-8', {fatal:true});
+const PREFIX = 'OBS2';
+const ITER = 420000, PIN_ITER = 260000;
+const AAD = enc.encode('OBSIDIAN|v2|private-message');
+const APP_PIN_KEY = 'obsidian_local_pin_v2';
+const secureCrypto = !!(globalThis.crypto && crypto.subtle && crypto.getRandomValues);
+let pinRecord = null, pinMemory = null, unlocked = false, activeTab = 'encrypt', lastActive = Date.now(), decryptSeq = 0, timer = null, lastCipher = '';
+function report(id,msg,kind='') { const e=$(id); e.textContent=msg; e.className='status'+(kind?' '+kind:''); }
+function rand(n){ const b=new Uint8Array(n);crypto.getRandomValues(b);return b; }
+function b64(bytes){ let str='';for(let i=0;i<bytes.length;i+=16384)str+=String.fromCharCode(...bytes.subarray(i,i+16384));return btoa(str).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function ub64(s){if(!/^[a-zA-Z0-9_-]+$/.test(s)||s.length%4===1)throw new Error('Encrypted message is malformed.');const raw=atob(s.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-s.length%4)%4));return Uint8Array.from(raw,c=>c.charCodeAt(0));}
+function same(a,b){if(a.length!==b.length)return false;let difference=0;for(let i=0;i<a.length;i++)difference|=a[i]^b[i];return difference===0;}
+async function pbkdf2(password,salt,iterations){const key=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveBits']);return new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations,hash:'SHA-256'},key,256));}
+async function aesKey(secret,salt,usage){const raw=await pbkdf2(secret,salt,ITER);try{return await crypto.subtle.importKey('raw',raw,'AES-GCM',false,[usage]);}finally{raw.fill(0);}}
+function readPin(){try {const s=localStorage.getItem(APP_PIN_KEY);if(!s)return null;const r=JSON.parse(s);if(r.v===2 && typeof r.s==='string' && typeof r.h==='string' && /^[A-Za-z0-9_-]+$/.test(r.s)&&/^[A-Za-z0-9_-]+$/.test(r.h) && ub64(r.s).length===16 && ub64(r.h).length===32)return r;} catch(_e){} return null;}
+function rememberPin(r){pinMemory=r;try{localStorage.setItem(APP_PIN_KEY,JSON.stringify(r));return true;}catch(e){return false;}}
+function displayLock(){const have=!!(pinMemory||pinRecord);$('lockTitle').textContent=have?'Enter your code.':'Set your code.';$('lockBlurb').textContent=have?'Unlock OBSIDIAN with your eight-digit access code.':'Choose an eight-digit access code for this device.';$('confirmWrap').classList.toggle('hidden',have);$('pinSubmit').textContent=have?'Unlock OBSIDIAN':'Set code & unlock';$('pinEntry').value='';$('pinConfirm').value='';$('lockScreen').style.display='block';$('appScreen').style.display='none';}
+function clearFields(){lastCipher='';for(const id of ['secret','message','received','output'])$(id).value='';report('resultStatus','');}
+function lock(){unlocked=false;decryptSeq++;clearFields();displayLock();report('pinStatus','');}
+function unlock(){unlocked=true;lastActive=Date.now();$('lockScreen').style.display='none';$('appScreen').style.display='block';report('pinStatus','');}
+async function pinSubmit(e){e.preventDefault();if(!secureCrypto){report('pinStatus','Encryption is unavailable in this browser or file preview. Open this app in a modern secure browser.','err');return;}const pin=$('pinEntry').value;if(!/^\d{8}$/.test(pin)){report('pinStatus','Enter exactly eight digits.','err');return;}const btn=$('pinSubmit');btn.disabled=true;try{let stored=pinMemory||pinRecord;if(stored){const actual=await pbkdf2(pin,ub64(stored.s),PIN_ITER);if(!same(actual,ub64(stored.h))){report('pinStatus','Incorrect access code.','err');return;}unlock();}else{if(pin!==$('pinConfirm').value){report('pinStatus','Access codes do not match.','err');return;}const salt=rand(16);const hash=await pbkdf2(pin,salt,PIN_ITER);const r={v:2,s:b64(salt),h:b64(hash)};const persisted=rememberPin(r);unlock();if(!persisted)report('resultStatus','This browser cannot remember your code. You will need to set a new code the next time you open the file.','warn');}}catch(_e){report('pinStatus','Could not process access code in this browser.','err');}finally{btn.disabled=false;}}
+function checkSecret(){const s=$('secret').value;if(!s){throw new Error('Enter the shared encryption secret first.');}if(s.length<16){throw new Error('Use a shared secret at least 16 characters long. A random generated secret is much stronger.');}return s;}
+async function encryptMessage(plain,secret){const salt=rand(16),nonce=rand(12);const key=await aesKey(secret,salt,'encrypt');const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:nonce,additionalData:AAD,tagLength:128},key,enc.encode(plain)));return [PREFIX,b64(salt),b64(nonce),b64(ct)].join('.');}
+async function decryptMessage(cipher,secret){const parts=cipher.trim().split('.');if(parts.length!==4||parts[0]!==PREFIX)throw new Error('This is not a supported OBSIDIAN encrypted message.');const salt=ub64(parts[1]),nonce=ub64(parts[2]),ct=ub64(parts[3]);if(salt.length!==16||nonce.length!==12||ct.length<16||ct.length>150000)throw new Error('Encrypted message is damaged or too large.');const key=await aesKey(secret,salt,'decrypt');let plain;try{plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:nonce,additionalData:AAD,tagLength:128},key,ct);}catch(_e){throw new Error('Decryption failed: wrong secret or modified message.');}return dec.decode(plain);}
+async function doEncrypt(){if(!unlocked)return;const value=$('message').value;if(!value){report('resultStatus','Write a message first.','err');return;}let secret;try{secret=checkSecret();}catch(e){report('resultStatus',e.message,'err');return;}const btn=$('encrypt');btn.disabled=true;report('resultStatus','Encrypting…');try{const cipher=await encryptMessage(value,secret);if(!unlocked)return;lastCipher=cipher;$('output').value=cipher;$('outputLabel').textContent='Encrypted result';report('resultStatus','Encrypted. Copy the result to share.','ok');}catch(e){report('resultStatus','Encryption failed: '+e.message,'err');}finally{btn.disabled=false;}}
+async function doDecrypt(){if(!unlocked)return;const seq=++decryptSeq;const value=$('received').value.trim();if(!value){$('output').value='';report('resultStatus','Paste a message first.','warn');return;}let secret;try{secret=checkSecret();}catch(e){$('output').value='';report('resultStatus',e.message,'err');return;}const btn=$('decrypt');btn.disabled=true;report('resultStatus','Decrypting…');try{const text=await decryptMessage(value,secret);if(seq!==decryptSeq||!unlocked)return;$('output').value=text;$('outputLabel').textContent='Decrypted result';report('resultStatus','Decrypted successfully.','ok');}catch(e){if(seq!==decryptSeq||!unlocked)return;$('output').value='';report('resultStatus',e.message,'err');}finally{btn.disabled=false;}}
+function changeTab(which){activeTab=which;const de=which==='decrypt';$('tabEncrypt').classList.toggle('active',!de);$('tabDecrypt').classList.toggle('active',de);$('tabEncrypt').setAttribute('aria-selected',String(!de));$('tabDecrypt').setAttribute('aria-selected',String(de));$('encryptView').classList.toggle('hidden',de);$('decryptView').classList.toggle('hidden',!de);$('output').value='';$('outputLabel').textContent=de?'Decrypted result':'Encrypted result';report('resultStatus','');}
+async function copyText(text){if(!text)throw new Error('Nothing to copy.');if(navigator.clipboard && navigator.clipboard.writeText){try {await navigator.clipboard.writeText(text);return;}catch(_e){}}const t=document.createElement('textarea');t.value=text;t.style.position='fixed';t.style.left='-9999px';document.body.appendChild(t);t.focus();t.select();const ok=document.execCommand('copy');t.remove();if(!ok)throw new Error('Copy is unavailable here. Select the text and copy it manually.');}
+$('pinForm').addEventListener('submit',pinSubmit);
+$('lockNow').addEventListener('click',lock);
+$('tabEncrypt').addEventListener('click',()=>changeTab('encrypt'));
+$('tabDecrypt').addEventListener('click',()=>changeTab('decrypt'));
+$('encrypt').addEventListener('click',doEncrypt);
+$('decrypt').addEventListener('click',doDecrypt);
+$('tryMine').addEventListener('click',()=>{const v=lastCipher;if(!v.startsWith(PREFIX+'.')){report('resultStatus','Encrypt a message first, then copy it or paste an incoming one.','warn');return;}$('received').value=v;void doDecrypt();});
+$('showSecret').addEventListener('click',()=>{const inp=$('secret'),show=inp.type==='password';inp.type=show?'text':'password';$('showSecret').textContent=show?'Hide':'Show';});
+$('generate').addEventListener('click',()=>{if(!secureCrypto)return;$('secret').value=b64(rand(32));$('secret').type='text';$('showSecret').textContent='Hide';report('resultStatus','Strong message secret generated. Both people need an identical copy.','ok');});
+$('copySecret').addEventListener('click',async()=>{try{await copyText($('secret').value);report('resultStatus','Shared secret copied. Treat your clipboard as sensitive.','ok');}catch(e){report('resultStatus',e.message,'err');}});
+$('copyOutput').addEventListener('click',async()=>{try{await copyText($('output').value);report('resultStatus','Result copied.','ok');}catch(e){report('resultStatus',e.message,'err');}});
+$('clear').addEventListener('click',()=>{lastCipher='';for(const id of ['message','received','output'])$(id).value='';report('resultStatus','Cleared.','ok');});
+$('received').addEventListener('paste',()=>{if(!unlocked)return;clearTimeout(timer);timer=setTimeout(()=>{if($('received').value.startsWith(PREFIX+'.'))void doDecrypt();},100);});
+$('received').addEventListener('input',()=>{if(!unlocked)return;clearTimeout(timer);timer=setTimeout(()=>{if($('received').value.startsWith(PREFIX+'.'))void doDecrypt();},750);});
+$('secret').addEventListener('change',()=>{if(unlocked&&activeTab==='decrypt'&&$('received').value.startsWith(PREFIX+'.'))void doDecrypt();});
+['touchstart','keydown','pointerdown'].forEach(ev=>document.addEventListener(ev,()=>{if(unlocked)lastActive=Date.now();},{passive:true}));
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&unlocked)lock();});
+setInterval(()=>{if(unlocked&&Date.now()-lastActive>300000)lock();},15000);
+if(!secureCrypto){$('compat').textContent='Browser cryptography is unavailable in this preview. To use encryption, open this file in a secure browser context (typically HTTPS).';}
+pinRecord=readPin();displayLock();
+})();
+</script>
+</body>
+</html>
